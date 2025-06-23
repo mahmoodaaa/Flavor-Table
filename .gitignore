@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Environment variables
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+
+# Local development
+*.local
+*.bak
+*.tmp
+
+# Package manager
+yarn-debug.log*
+yarn-error.log*
+npm-debug.log*
+
+# Editor
+*.sublime-workspace
+*.sublime-project
+*.code-workspace
+*.iml
+*.ipynb_checkpoints
+.env
+
+# Misc
+.DS_Store
+Thumbs.db
+.gitkeep

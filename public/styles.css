@@ -13,6 +13,41 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 1;
+}
+
+/* Add a container to ensure content is above background */
+.container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    min-height: 100vh;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+/* Update page styles to use container */
+.page {
+    padding: 2rem;
+    flex: 1;
+    display: none;
+    color: white;
+}
+
+.page.active {
+    display: block;
+}
+
+/* Update main section to use container */
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    width: 100%;
 }
 
 /* Favorites page specific styles */
@@ -98,6 +133,37 @@ body {
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
+}
+
+.save-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.save-btn:hover {
+    background-color: #45a049;
+}
+
+.remove-btn,
+.remove-favorite {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: background-color 0.2s;
+}
+
+.remove-btn:hover,
+.remove-favorite:hover {
+    background-color: #da190b;
 }
 
 .search-input button {

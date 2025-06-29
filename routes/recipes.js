@@ -1,101 +1,86 @@
+// routes/recipes.js
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
-require('dotenv').config();
 
-// Helper to format recipe data
-const formatRecipe = (recipe) => ({
-    id: recipe.id,
-    title: recipe.title,
-    image: recipe.image,
-    usedIngredients: recipe.usedIngredients?.map(ing => ing.name) || [],
-    missedIngredients: recipe.missedIngredients?.map(ing => ing.name) || [],
-    likes: recipe.likes || 0,
-    readyInMinutes: recipe.readyInMinutes || 30,
-    sourceUrl: recipe.sourceUrl
-});
-
-// Error handler
-const handleApiError = (error, res) => {
-    console.error('API Error:', error.message);
-    res.status(500).json({ error: 'Failed to fetch recipes. Please try again later.' });
-};
+const API_KEY = process.env.APIKEY;
+const BASE_URL = 'https://api.spoonacular.com/recipes';
 
 // Search by ingredients
 router.get('/search', async (req, res) => {
-    try {
-        
-        const ingredients = req.query.ingredients;
-        console.log(ingredients);
-        if (!ingredients || ingredients.trim() === '') {
-            return res.status(400).json({ error: 'Ingredients query is required' });
-        }
+    const ingredients = req.query.ingredients;
 
-        const response = await axios.get('https://api.spoonacular.com/recipes/findByIngredients', {
+    if (!ingredients) {
+        return res.status(400).json({ error: 'Missing ingredients' });
+    }
+
+    try {
+        const response = await axios.get(`${BASE_URL}/findByIngredients`, {
             params: {
                 ingredients,
                 number: 10,
-                apiKey: process.env.APIKEY
+                apiKey: API_KEY
             }
         });
 
-        const recipes = response.data.map(formatRecipe);
-        if (recipes.length === 0) {
-            return res.status(404).json({ error: 'No recipes found' });
-        }
+        const formatted = response.data.map(r => ({
+            id: r.id,
+            title: r.title,
+            image: r.image,
+            readyInMinutes: r.readyInMinutes || 30,
+            usedIngredients: r.usedIngredients?.map(i => i.name),
+            missedIngredients: r.missedIngredients?.map(i => i.name)
+        }));
 
-        res.json({ recipes });
+        res.json({ recipes: formatted });
     } catch (error) {
-        handleApiError(error, res);
+        console.error('Search error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to fetch recipes' });
     }
 });
 
-// Get recipe by ID
-router.get('/recipes/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const response = await axios.get(`https://api.spoonacular.com/recipes/${id}/information`, {
-            params: { apiKey: process.env.APIKEY }
-        });
-
-        const recipe = formatRecipe(response.data);
-        res.json(recipe);
-    } catch (error) {
-        handleApiError(error, res);
-    }
-});
-
-// Get random recipe
+// Random recipe
 router.get('/random', async (req, res) => {
     try {
-        console.log(process.env.APIKEY);
-        if (!process.env.APIKEY) {
-            return res.status(500).json({ error: 'API key not configured' });
-        }
-
-        const response = await axios.get('https://api.spoonacular.com/recipes/random', {
+        const response = await axios.get(`${BASE_URL}/random`, {
             params: {
                 number: 1,
-                apiKey: process.env.APIKEY
-            },
-            timeout: 5000
+                apiKey: API_KEY
+            }
         });
 
-        if (!response.data.recipes || response.data.recipes.length === 0) {
-            return res.status(404).json({ error: 'No recipes found' });
-        }
+        const recipe = response.data.recipes[0];
 
-        const recipe = formatRecipe(response.data.recipes[0]);
         res.json({ recipe });
     } catch (error) {
-        console.error('Error fetching random recipe:', error);
-        if (error.response) {
-            console.error('API Response:', error.response.data);
-            return res.status(error.response.status).json({ 
-                error: error.response.data?.error || 'Failed to fetch recipe' 
-            });
-        }
-        return res.status(500).json({ error: 'Failed to fetch recipe. Please try again later.' });
+        console.error('Random error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to fetch random recipe' });
+    }
+});
+
+// Recipe details
+router.get('/details/:id', async (req, res) => {
+    const recipeId = req.params.id;
+
+    try {
+        const response = await axios.get(`${BASE_URL}/${recipeId}/information`, {
+            params: {
+                apiKey: API_KEY
+            }
+        });
+
+        const r = response.data;
+        res.json({
+            id: r.id,
+            title: r.title,
+            image: r.image,
+            readyInMinutes: r.readyInMinutes,
+            instructions: r.instructions || 'No instructions found',
+            ingredients: r.extendedIngredients.map(i => i.original)
+        });
+    } catch (error) {
+        console.error('Details error:', error.response?.data || error.message);
+        res.status(500).json({ error: 'Failed to fetch recipe details' });
     }
 });
 

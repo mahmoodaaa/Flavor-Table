@@ -1,8 +1,11 @@
-const express = require('express')
-const router = express.Router()
+// routes/home.js
+const express = require("express");
+const path = require("path");
+const router = express.Router();
 
-router.get('/', (req, res) => {
-    res.sendFile('index.html', { root: '../public' })
-})
+// Serve index.html
+router.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/index.html"));
+});
 
-module.exports = router
+module.exports = router;

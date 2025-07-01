@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flavor Table - Recipe Finder</title>
+    <title>Flavor Table - Search Recipes</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -11,41 +11,22 @@
     <nav class="navbar">
         <div class="nav-brand">Flavor Table</div>
         <div class="nav-links">
-            <a href="/" class="nav-btn active">Search Recipes</a>
-            <a href="/randomRecipes.html" class="nav-btn">Random Recipe</a>
-            <a href="/favorites.html" class="nav-btn">Favorites</a>
+            <a href="index.html" class="nav-btn active">Search Recipes</a>
+            <a href="randomRecipes.html" class="nav-btn">Random Recipe</a>
+            <a href="favorites.html" class="nav-btn">Favorites</a>
         </div>
     </nav>
 
     <main>
-        <!-- Search Page -->
-        <section id="search-page" class="page active">
+        <section class="page active">
             <form id="search-form">
                 <input type="text" id="search-input" placeholder="Enter ingredients (e.g. chicken, rice)" required />
                 <button type="submit" id="search-btn">Search</button>
             </form>
-            <div id="recipes-container"></div>
-        </section>
-
-        <!-- Random Recipe Page -->
-        <section id="random-page" class="page">
-            <div class="random-container">
-                <h1>Random Recipe</h1>
-                <button id="random-btn">Generate Random Recipe</button>
-                <div id="random-recipe"></div>
-            </div>
-        </section>
-
-        <!-- Favorites Page -->
-        <section id="favorites-page" class="page">
-            <div class="favorites-container">
-                <h1>My Favorites</h1>
-                <div class="favorites-grid"></div>
-            </div>
+            <div id="recipes-container" class="recipe-grid"></div>
         </section>
     </main>
 
-    <!-- Modal -->
     <div id="recipe-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -56,3 +37,5 @@
     <script src="app.js"></script>
 </body>
 </html>
+
+

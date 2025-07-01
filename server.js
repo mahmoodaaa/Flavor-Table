@@ -1,35 +1,32 @@
 // server.js
-require('dotenv').config();
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
+const recipesRouter = require('./routes/recipes');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const pg = require('pg');
+const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL
+});
+
 // Middleware
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+app.use(express.static('public'));
 
 // Routes
-const homeRouter = require('./routes/home');
-const recipesRouter = require('./routes/recipes');
-
-app.use('/', homeRouter);
 app.use('/api/recipes', recipesRouter);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
-});
-
-// Handle 404
-app.use((req, res) => {
-    res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
-});
-
-app.listen(PORT, () => {
-    console.log(`Flavor-Table server listening on port ${PORT}`);
-});
+// DB connection then start server
+pool.connect()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`App is listening on port .sssssssssss ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('Could not connect to database', err);
+  });

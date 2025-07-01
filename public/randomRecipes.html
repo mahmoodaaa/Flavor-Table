@@ -12,29 +12,22 @@
     <nav class="navbar">
         <div class="nav-brand">Flavor Table</div>
         <div class="nav-links">
-            <a href="/" class="nav-btn">Search Recipes</a>
-            <a href="/randomRecipes.html" class="nav-btn active">Random Recipe</a>
-            <a href="/favorites.html" class="nav-btn">Favorites</a>
+            <a href="index.html" class="nav-btn">Search Recipes</a>
+            <a href="randomRecipes.html" class="nav-btn active">Random Recipe</a>
+            <a href="favorites.html" class="nav-btn">Favorites</a>
         </div>
     </nav>
 
-    <div class="container">
-        <main>
-            <section id="random-page" class="page active">
-                <div class="random-container">
-                    <h1>Random Recipe</h1>
-                    <button id="random-btn">Generate Random Recipe</button>
-                    <div id="random-recipe"></div>
-                </div>
-            </section>
-            <section class="favorites-container">
-                <h2>Your Favorites</h2>
-                <div class="favorites-grid"></div>
-            </section>
-        </main>
-    </div>
+    <main>
+        <section class="page active">
+            <div class="random-container">
+                <h1>Random Recipe</h1>
+                <button id="random-btn">Generate Random Recipe</button>
+                <div id="random-recipe"></div>
+            </div>
+        </section>
+    </main>
 
-    <!-- Modal -->
     <div id="recipe-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>

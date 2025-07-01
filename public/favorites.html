@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,9 +12,9 @@
     <nav class="navbar">
         <div class="nav-brand">Flavor Table</div>
         <div class="nav-links">
-            <a href="/" class="nav-btn">Search Recipes</a>
-            <a href="/randomRecipes.html" class="nav-btn">Random Recipe</a>
-            <a href="/favorites.html" class="nav-btn active">Favorites</a>
+            <a href="index.html" class="nav-btn">Search Recipes</a>
+            <a href="randomRecipes.html" class="nav-btn">Random Recipe</a>
+            <a href="favorites.html" class="nav-btn active">Favorites</a>
         </div>
     </nav>
 
@@ -26,11 +27,30 @@
         </section>
     </main>
 
-    <!-- Modal -->
     <div id="recipe-modal" class="modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Edit Recipe</h2>
+            <form id="edit-form">
+                <input type="text" id="edit-title" name="title" placeholder="Recipe Title" required>
+                <input type="url" id="edit-image" name="image" placeholder="Image URL">
+                <textarea id="edit-instructions" name="instructions" placeholder="Instructions" required></textarea>
+                <input type="number" id="edit-readyIn" name="readyIn" placeholder="Ready In (minutes)" required>
+                <div id="edit-ingredients-container">
+                    <input type="text" id="edit-ingredient-input" placeholder="Add ingredient">
+                    <button type="button" onclick="addIngredient()">Add</button>
+                </div>
+                <div id="edit-ingredients-list"></div>
+                <button type="submit">Save Changes</button>
+                <button type="button" onclick="closeModal('edit-modal')">Cancel</button>
+            </form>
         </div>
     </div>
 

@@ -77,8 +77,6 @@ async function updateRecipeCardButtons(recipeId) {
     });
 }
 
-
-
 async function isInFavorites(id) {
     try {
         const response = await fetch(`${API_BASE_URL}/all`);
@@ -91,31 +89,102 @@ async function isInFavorites(id) {
     }
 }
 
+async function updateFavoritesList() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/all`);
+        if (!response.ok) throw new Error('Failed to fetch favorites');
+        const recipes = await response.json();
+        
+        const favoritesList = document.getElementById('favorites-list');
+        favoritesList.innerHTML = recipes.map(recipe => createRecipeCard(recipe)).join('');
+    } catch (error) {
+        showError('Failed to update favorites list', error);
+    }
+}
+
+function addIngredient() {
+    const input = document.getElementById('edit-ingredient-input');
+    const list = document.getElementById('edit-ingredients-list');
+    
+    if (input.value.trim()) {
+        const li = document.createElement('li');
+        li.textContent = input.value;
+        list.appendChild(li);
+        input.value = '';
+    }
+}
+
+async function openEditForm(recipeId) {
+    try {
+        const response = await fetch(`${API_BASE_URL}/${recipeId}`);
+        if (!response.ok) throw new Error('Failed to fetch recipe');
+        const recipe = await response.json();
+        
+        document.getElementById('edit-title').value = recipe.title;
+        document.getElementById('edit-image').value = recipe.image || '';
+        document.getElementById('edit-instructions').value = recipe.instructions;
+        document.getElementById('edit-readyIn').value = recipe.readyIn || '';
+
+        const ingredientsList = document.getElementById('edit-ingredients-list');
+        ingredientsList.innerHTML = '';
+        (recipe.ingredients || []).forEach(ingredient => {
+            const li = document.createElement('li');
+            li.textContent = ingredient;
+            ingredientsList.appendChild(li);
+        });
+
+        document.getElementById('edit-modal').style.display = 'block';
+
+        // Move this outside the openEditForm or ensure it's added only once.
+        document.getElementById('edit-form').onsubmit = async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                title: document.getElementById('edit-title').value,
+                image: document.getElementById('edit-image').value,
+                instructions: document.getElementById('edit-instructions').value,
+                readyIn: document.getElementById('edit-readyIn').value,
+                ingredients: Array.from(ingredientsList.children).map(li => li.textContent)
+            };
+
+            try {
+                const updateResponse = await fetch(`${API_BASE_URL}/${recipeId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!updateResponse.ok) throw new Error('Failed to update recipe');
+
+                await updateFavoritesList();
+                closeModal('edit-modal');
+            } catch (error) {
+                showError('Failed to update recipe', error);
+            }
+        };
+    } catch (error) {
+        showError('Failed to load recipe for editing', error);
+    }
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
 
 async function saveRecipe(recipe) {
     try {
         if (favoritesContainer) showLoadingState(favoritesContainer);
-
-        const payload = {
-            id: recipe.id,
-            title: recipe.title || 'Untitled Recipe',
-            image: recipe.image || '',
-            instructions: recipe.instructions || 'No instructions provided.',
-            ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients : [],
-            readyIn: recipe.readyInMinutes || recipe.readyIn || 30
-        };
-
-        const response = await fetch(API_BASE_URL, {
+        const response = await fetch(`${API_BASE_URL}/`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(recipe)
         });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => {});
-            throw new Error(errorData?.error || 'Failed to save recipe');
-        }
-
+        if (!response.ok) throw new Error('Failed to save recipe');
+        updateFavoritesList();
         if (favoritesContainer) await updateFavoritesList();
         showError('Recipe saved to favorites!');
     } catch (error) {

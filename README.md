@@ -1,15 +1,42 @@
 # Flavor Table Images
 
-This directory should contain the following images:
+This directory contains the following images:
 
-1. Background Images:
+1. User Interface Screenshots:
+   - `login.png`: Login page screenshot showing user authentication
+   - `register.png`: Registration page screenshot showing user signup process
+   - `getAll.png`: Main page screenshot showing all flavors
+   - `update.png`: Update page screenshot showing flavor modification interface
+
+2. Background Images:
    - `search-bg.jpg`: A food-related background image for the search page
    - `random-bg.jpg`: A background image for the random recipe page
    - `favorites-bg.jpg`: A background image for the favorites page
    - `home-bg.jpg`: A background image for the home page
 
-2. Default Images:
+3. Default Images:
    - `default-recipe.jpg`: A default recipe image to show when a recipe image fails to load
+
+## Screenshots
+
+Here are the screenshots of the application:
+
+### Login Page
+![Login Page](./images/login.png)
+
+### Registration Page
+![Registration Page](./images/register.png)
+
+### Main Page (Get All)
+![Main Page](./images/getAll.png)
+
+
+### Main Page (Get User Profile)
+![Main Page](./images/getUserProfile.png)
+
+
+### Update Page
+![Update Page](./images/update.png)
 
 ## Adding Images
 

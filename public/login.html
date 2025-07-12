@@ -1,11 +1,12 @@
 <!-- public/login.html -->
+<!-- public/login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login</title>
-  <link rel="stylesheet" href="login.css" />
+ <link rel="stylesheet" href="shared-auth.css" />
 </head>
 <body>
   <div class="login-container">
@@ -15,6 +16,10 @@
       <input type="password" id="password" placeholder="Password" required />
       <button type="submit">Login</button>
     </form>
+    
+    <!-- 🔗 Add register link here -->
+    <p>Don't have an account? <a href="register.html">Register here</a></p>
+
     <p id="login-error" class="error"></p>
   </div>
   <script src="login.js"></script>

@@ -36,20 +36,21 @@ router.post('/', async (req, res) => {
 
     // Validate required fields
     if (!title) throw new Error('Title is required');
-    if (!instructions) throw new Error('Instructions are required');
 
-    // Ingredients should be stored as a JSON array string for better flexibility
+    // Default to placeholder instructions if missing
+    const finalInstructions = instructions && instructions.trim() !== ''
+      ? instructions
+      : 'No instructions provided.';
+
+    // Ingredients should be stored as a JSON array string
     let ingredientsString;
     if (Array.isArray(ingredients)) {
       ingredientsString = JSON.stringify(ingredients);
     } else if (typeof ingredients === 'string' && ingredients.trim()) {
-      // Assume JSON string or comma-separated string
       try {
-        // Try parse if JSON string
         JSON.parse(ingredients);
         ingredientsString = ingredients;
       } catch {
-        // Otherwise convert to JSON array string by splitting commas
         ingredientsString = JSON.stringify(ingredients.split(',').map(i => i.trim()));
       }
     } else {
@@ -59,7 +60,7 @@ router.post('/', async (req, res) => {
     // Insert into DB
     const result = await pool.query(
       'INSERT INTO recipes (title, image, instructions, ingredients, readyIn) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [title, image, instructions, ingredientsString, readyIn || null]
+      [title, image, finalInstructions, ingredientsString, readyIn || null]
     );
 
     res.status(201).json(result.rows[0]);
@@ -83,28 +84,46 @@ router.get('/all', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch saved recipes' });
     }
 });
+
+
+
+
+
+
 // UPDATE recipe
 router.put('/:id', async (req, res) => {
   try {
     const id = req.params.id;
     const { title, image, instructions, ingredients, readyIn } = req.body;
 
+    // Debug log
+    console.log('Received PUT data for update:', req.body);
+
+    // Validate required fields
+    if (!title || typeof title !== 'string') throw new Error('Title is required and must be a string');
+    if (!instructions || typeof instructions !== 'string') throw new Error('Instructions are required and must be a string');
+
+    // Process ingredients
     let ingredientsString;
+
     if (Array.isArray(ingredients)) {
       ingredientsString = JSON.stringify(ingredients);
-    } else if (typeof ingredients === 'string' && ingredients.trim()) {
+    } else if (typeof ingredients === 'string') {
       try {
-        JSON.parse(ingredients);
-        ingredientsString = ingredients;
+        ingredientsString = JSON.stringify(JSON.parse(ingredients));
       } catch {
-        ingredientsString = JSON.stringify(ingredients.split(',').map(i => i.trim()));
+        ingredientsString = JSON.stringify(
+          ingredients.split(',').map(i => i.trim()).filter(i => i.length > 0)
+        );
       }
     } else {
       ingredientsString = JSON.stringify([]);
     }
 
     const result = await pool.query(
-      'UPDATE recipes SET title=$1, image=$2, instructions=$3, ingredients=$4, readyIn=$5 WHERE id=$6 RETURNING *',
+      `UPDATE recipes 
+       SET title = $1, image = $2, instructions = $3, ingredients = $4, readyIn = $5 
+       WHERE id = $6 RETURNING *`,
       [title, image, instructions, ingredientsString, readyIn || null, id]
     );
 
@@ -113,15 +132,22 @@ router.put('/:id', async (req, res) => {
     }
 
     const updatedRecipe = result.rows[0];
-    updatedRecipe.ingredients = updatedRecipe.ingredients ? JSON.parse(updatedRecipe.ingredients) : [];
+    try {
+      updatedRecipe.ingredients = JSON.parse(updatedRecipe.ingredients || '[]');
+    } catch {
+      console.warn(`Warning: Failed to parse ingredients for recipe ID ${updatedRecipe.id}`);
+      updatedRecipe.ingredients = [];
+    }
 
     res.json(updatedRecipe);
   } catch (err) {
     console.error('Update error:', err);
-    res.status(500).json({ error: 'Failed to update recipe', details: err.message });
+    res.status(500).json({
+      error: 'Failed to update recipe',
+      details: err.message
+    });
   }
 });
-
 // DELETE recipe
 router.delete('/:id', async (req, res) => {
   try {
@@ -213,4 +239,37 @@ router.get('/search', async (req, res) => {
   }
 });
 
+
+// GET recipe by ID
+router.get('/:id', async (req, res) => {
+  const recipeId = req.params.id;
+  try {
+    const result = await pool.query('SELECT * FROM recipes WHERE id = $1', [recipeId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Recipe not found' });
+    }
+
+    const recipe = result.rows[0];
+
+    // Safe parse of ingredients
+    try {
+      recipe.ingredients = recipe.ingredients ? JSON.parse(recipe.ingredients) : [];
+    } catch {
+      console.warn(`Warning: Failed to parse ingredients for recipe ID ${recipe.id}`);
+      recipe.ingredients = [];
+    }
+
+    res.json(recipe);
+  } catch (err) {
+    console.error('Error fetching recipe by ID:', err);
+    res.status(500).json({ error: 'Failed to fetch recipe', details: err.message });
+  }
+});
+
+
+
+
+
 module.exports = router;
+  

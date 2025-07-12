@@ -1,32 +1,28 @@
+
+// server.js
 // server.js
 const express = require('express');
-const cors = require('cors');
-const recipesRouter = require('./routes/recipes');
+const app = express();
+const path = require('path');
+
+const recipesRoutes = require('./routes/recipes');
+const authRoutes = require('./routes/auth');
+
+// Load environment variables (if using .env)
 require('dotenv').config();
 
-const app = express();
+// ✅ Middleware
+app.use(express.json()); // Parse JSON request bodies
+
+// ✅ Serve frontend static files from /public folder
+app.use(express.static(path.join(__dirname, 'public')));
+
+// ✅ API routes (make sure this is AFTER express.json and static)
+app.use('/api/recipes', recipesRoutes);
+app.use('/api/auth', authRoutes);
+
+// ✅ Start server
 const PORT = process.env.PORT || 3000;
-
-const pg = require('pg');
-const pool = new pg.Pool({
-  connectionString: process.env.DATABASE_URL
+app.listen(PORT, () => {
+  console.log(`App is listening on port ${PORT}`);
 });
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
-
-// Routes
-app.use('/api/recipes', recipesRouter);
-
-// DB connection then start server
-pool.connect()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`App is listening on port .sssssssssss ${PORT}`);
-    });
-  })
-  .catch(err => {
-    console.error('Could not connect to database', err);
-  });

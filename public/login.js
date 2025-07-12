@@ -20,7 +20,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
    if (response.ok && data.token) {
   localStorage.setItem("token", data.token);
   alert("Login successful!");
-  window.location.href = "/profile.html"; // ✅ redirect to dashboard/profile
+  window.location.href = "/index.html"; // ✅ redirect to dashboard/profile
  // redirect to home or profile
     } else {
       errorMsg.textContent = data.message || "Invalid login credentials";

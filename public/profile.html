@@ -1,0 +1,35 @@
+<!-- public/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Profile</title>
+</head>
+<body>
+  <h1>Welcome, <span id="username"></span>!</h1>
+  <p>Email: <span id="email"></span></p>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = "/login.html";
+    } else {
+      fetch("/api/auth/users/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("username").textContent = data.username;
+        document.getElementById("email").textContent = data.email;
+      })
+      .catch(err => {
+        console.error("Error loading profile", err);
+        alert("You must be logged in.");
+        window.location.href = "/login.html";
+      });
+    }
+  </script>
+</body>
+</html>

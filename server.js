@@ -1,6 +1,5 @@
 
 // server.js
-// server.js
 const express = require('express');
 const app = express();
 const path = require('path');
@@ -8,16 +7,20 @@ const path = require('path');
 const recipesRoutes = require('./routes/recipes');
 const authRoutes = require('./routes/auth');
 
-// Load environment variables (if using .env)
 require('dotenv').config();
 
-// ✅ Middleware
-app.use(express.json()); // Parse JSON request bodies
+app.use(express.json());
 
-// ✅ Serve frontend static files from /public folder
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
+
+// ✅ Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ✅ API routes (make sure this is AFTER express.json and static)
+// ✅ Redirect / to login.html
+
+// ✅ API routes
 app.use('/api/recipes', recipesRoutes);
 app.use('/api/auth', authRoutes);
 

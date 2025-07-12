@@ -1,5 +1,7 @@
 # Flavor Table Images
 
+Live Demo: [https://flavor-table-1-uxb6.onrender.com/](https://flavor-table-1-uxb6.onrender.com/)
+
 This directory contains the following images:
 
 1. User Interface Screenshots:

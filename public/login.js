@@ -17,10 +17,11 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
 
     const data = await response.json();
 
-    if (response.ok && data.token) {
-      localStorage.setItem("token", data.token);
-      alert("Login successful!");
-      window.location.href = "/"; // redirect to home or profile
+   if (response.ok && data.token) {
+  localStorage.setItem("token", data.token);
+  alert("Login successful!");
+  window.location.href = "/profile.html"; // ✅ redirect to dashboard/profile
+ // redirect to home or profile
     } else {
       errorMsg.textContent = data.message || "Invalid login credentials";
     }

@@ -5,28 +5,25 @@ document.getElementById("register-form").addEventListener("submit", async (e) =>
   const username = document.getElementById("username").value.trim();
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
+  const errorMsg = document.getElementById("register-error");
 
   try {
     const response = await fetch("/api/auth/register", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username, email, password })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password }),
     });
 
     const data = await response.json();
 
     if (response.ok) {
-      alert("Registration successful!");
-      console.log("Registered:", data);
-      // Optionally redirect to login
+      alert("Registration successful! Please log in.");
       window.location.href = "/login.html";
     } else {
-      alert("Error: " + (data || "Unknown error"));
+      errorMsg.textContent = data.message || "Registration failed.";
     }
-  } catch (err) {
-    console.error("Registration error:", err);
-    alert("Something went wrong. Try again.");
+  } catch (error) {
+    console.error("Registration error", error);
+    errorMsg.textContent = "Something went wrong. Try again.";
   }
 });
